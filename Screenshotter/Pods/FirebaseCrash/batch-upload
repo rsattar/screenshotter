@@ -1,0 +1,183 @@
+#!/bin/bash
+#
+# Environment variables:
+#   SERVICE_PLIST - path to GoogleService-Info.plist (-p command-line option)
+#   INFO_PLIST - path to Info.plist (-i command-line option)
+#   FCR_BUNDLE_ID - CFBundleIdentifier (build version) from Info.plist
+#   FCR_DUMP_SYMS - path to dump_syms executable
+#   FCR_PROD_VERS - CFBundleShortVersionString (marketing version) from Info.plist
+#   FIREBASE_API_KEY - API key from GoogleService-Info.plist
+#   FIREBASE_APP_ID - App ID from GoogleService-Info.plist
+#   SWIFT_DEMANGLE - path to swift-demangle executable
+#
+# Setting any of the above prevents this script from computing the
+# values.  Specifically, the SERVICE_PLIST and INFO_PLIST files are
+# not required if FCR_* and FIREBASE_* environment variables are not
+# empty.
+
+help () {
+    usage
+    cat >&2 <<EOF
+
+-h      Show this help.
+-p      Location of GoogleService-Info.plist
+-i      Location of Info.plist
+mach-o  A path to an executable, dSYM file, library,
+        or other Mach-O object
+uuid    A dSYM file's UUID (searches for the file)
+
+Processes one or more Mach-O files for use with the Firebase Crash
+Reporter.  dSYM bundles may be specified by full path to the dSYM
+companion file (usually found under "DWARF") or by UUID.
+
+For applications and frameworks, please use the full path to the
+Mach-O file.  For frameworks, this will be "Blah.framework/Blah".
+For applications, this will be "Blah.app/Blah".
+EOF
+}
+
+usage () {
+    echo >&2 "usage: ${0##*/} [-h] [-p google-service] [-i info] {mach-o file|uuid} ..."
+}
+
+while getopts hi:p:-: OPT; do
+    case $OPT in
+    h)  help; exit 0;;
+    i)  INFO_PLIST="$OPTARG";;
+    p)  SERVICE_PLIST="$OPTARG";;
+    -)  case "$OPTARG" in
+        help)           help; exit 0;;
+        info=*)         INFO_PLIST="${OPTARG#info=}";;
+        service=*)      SERVICE_PLIST="${OPTARG#service=}";;
+        *)              usage; exit 2;;
+        esac;;
+    ?)  usage; exit 2;;
+    esac
+done
+
+shift $((OPTIND - 1))
+
+if (( $# == 0 )); then
+    usage
+    exit 2
+fi
+
+if [[ "$INFO_PLIST" && -f "${INFO_PLIST%/*}/GoogleService-Info.plist" ]]; then
+    : "${SERVICE_PLIST:="${INFO_PLIST%/*}/GoogleService-Info.plist"}"
+fi
+
+: "${SERVICE_PLIST:="$(find . -name GoogleService-Info.plist | head -n1)"}"
+
+if [[ "$SERVICE_PLIST" && -f "${SERVICE_PLIST%/*}/Info.plist" ]]; then
+    : "${INFO_PLIST:="${SERVICE_PLIST%/*}/Info.plist"}"
+fi
+
+: "${SERVICE_PLIST:="$(find . -name Info.plist | head -n1)"}"
+
+if [[ -f "$SERVICE_PLIST" ]]; then
+    : "${FIREBASE_API_KEY:="$(/usr/libexec/PlistBuddy -c 'print API_KEY' "$SERVICE_PLIST")"}"
+    : "${FIREBASE_APP_ID:="$(/usr/libexec/PlistBuddy -c 'print GOOGLE_APP_ID' "$SERVICE_PLIST")"}"
+fi
+
+if [[ -f "$INFO_PLIST" ]]; then
+    : "${FCR_PROD_VERS:="$(/usr/libexec/PlistBuddy -c 'print CFBundleShortVersionString' "$INFO_PLIST" 2>/dev/null)"}"
+    : "${FCR_BUNDLE_ID:="$(/usr/libexec/PlistBuddy -c 'print CFBundleIdentifier' "$INFO_PLIST" 2>/dev/null)"}"
+fi
+
+ERROR="not set (check GoogleService-Info.plist and Info.plist settings)"
+
+: "${FIREBASE_API_KEY:?$ERROR}" "${FIREBASE_APP_ID:?$ERROR}"
+: "${FCR_PROD_VERS:?$ERROR}" "${FCR_BUNDLE_ID:?$ERROR}"
+
+. "$(dirname "$0")/upload-sym-util.bash"
+
+extract_symbols_and_upload () {
+    local EXECUTABLE="$1" ARCH="$2" DSYM_BUNDLE="$3"    # DSYM_BUNDLE is optional
+
+    # If the executable cannot be found, then use the dSYM bundle as the primary symbol source.
+
+    if [[ ! "$EXECUTABLE" ]]; then
+        EXECUTABLE="$DSYM_BUNDLE"
+        unset DSYM_BUNDLE
+    fi
+
+    [[ "$EXECUTABLE" ]] || return
+
+    : "${SWIFT_DEMANGLE:="$(xcrun --find swift-demangle 2>/dev/null | head -n1)"}"
+
+    fcr_mktemp SYMBOL_FILE
+
+    "${FCR_DUMP_SYMS:="$(script_dir)/dump_syms"}" -a "$ARCH" ${DSYM_BUNDLE:+-g "$DSYM_BUNDLE"} "$EXECUTABLE" | "${SWIFT_DEMANGLE:=cat}" >|"$SYMBOL_FILE" || return $?
+
+    fcr_upload_files "$SYMBOL_FILE" || return $?
+}
+
+# Check to see if the file is an executable or a dSYM bundle
+is_executable () {
+    [[ -f "$1" || ( -d "$1" && "${1%/}" = *.dSYM ) ]]
+}
+
+for EXE; do
+    if is_executable "$EXE"; then
+        # Import architecture UUID information
+        UUIDS=() ARCHS=()
+        eval "$(dwarfdump --uuid "$EXE" | awk '/^UUID:/ { print "UUIDS+=(" $2 "); ARCHS+=" $3 }')"
+    else
+        UUIDS=("$EXE"); unset EXE
+    fi
+
+    BUNDLES=()
+    for UUID in "${UUIDS[@]}"; do
+        QUERY="com_apple_xcode_dsym_uuids = '$UUID'"
+        eval "$(mdfind "$QUERY" -0 | xargs -0 printf 'BUNDLES+=("%s");')"
+    done
+
+    if [[ "${#BUNDLES[@]}" = 0 && "${#ARCHS[@]}" = 0 ]]; then
+        echo >&2 "${UUIDS[0]}: warning: no executable or bundle"
+        continue
+    fi
+
+    if [[ "${#BUNDLES[@]}" = 0 ]]; then
+        # Debugging info is embedded in executable (or is no longer available)
+        for ARCH in "${ARCHS[@]}"; do extract_symbols_and_upload "$EXE" "$ARCH" || exit $?; done
+    fi
+
+    SEEN_INFO=()
+
+    for BUNDLE in "${BUNDLES[@]}"; do
+        typeset -a BNDL_UUIDS BNDL_PATHS
+
+        eval "BNDL_UUIDS=$(mdls -raw -name com_apple_xcode_dsym_uuids "$BUNDLE" | sed -e s/,$//)"
+        eval "BNDL_PATHS=$(mdls -raw -name com_apple_xcode_dsym_paths "$BUNDLE" | sed -e s/,$//)"
+
+        if [[ ! "$EXE" ]]; then
+            UUIDS=() ARCHS=()
+            for BNDL_PATH in "${BNDL_PATHS[@]}"; do
+                DWARF="${BUNDLE}/${BNDL_PATH}"
+                eval "$(dwarfdump --uuid "$DWARF" | awk '/^UUID:/ { print "UUIDS+=(" $2 "); ARCHS+=" $3 }')"
+            done
+        fi
+
+        for I in "${!BNDL_UUIDS[@]}"; do
+            BNDL_UUID="${BNDL_UUIDS[$I]}" BNDL_PATH="${BNDL_PATHS[$I]}"
+            for J in "${!ARCHS[@]}"; do
+                [[ "$BNDL_UUID" = "${UUIDS[$J]}" ]] && ARCH="${ARCHS[$J]}"
+            done
+
+            for INFO in "${SEEN_INFO[@]}"; do
+                SEEN_ARCH="${INFO%%:*}" SEEN_PATH="${INFO#*:}"
+                if [[ "$ARCH" = "$SEEN_ARCH" ]] && cmp -s "$BUNDLE/$BNDL_PATH" "$SEEN_PATH"; then
+                    unset BUNDLE BNDL_PATH
+                    break
+                fi
+            done
+
+            if [[ "$BUNDLE" && "$BNDL_PATH" && -f "$BUNDLE/$BNDL_PATH" ]]; then
+                extract_symbols_and_upload "$EXE" "$ARCH" "$BUNDLE" || exit $?
+                SEEN_INFO+=("${ARCH}:${BUNDLE}/${BNDL_PATH}")
+            fi
+        done
+    done
+done
+
+echo "Done."

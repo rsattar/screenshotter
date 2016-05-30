@@ -1,0 +1,5 @@
+source 'https://github.com/CocoaPods/Specs.git'
+pod 'Firebase'
+pod 'Firebase/Crash'
+pod 'MBProgressHUD', '~> 0.9'
+pod 'SDWebImage', '~> 3.7'

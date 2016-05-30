@@ -1,0 +1,219 @@
+#!/bin/bash
+
+usage () {
+    echo >&2 "usage: $0 [-h] [-v] [-w|-e]"
+}
+
+help () {
+    usage
+
+    cat >&2 <<EOF
+
+    -h  This message.
+    -v  Increase verbosity.  Multiple -v options will provide
+        increasing details.  Use at least '-vv' when reporting bugs.
+    -w  Treat errors as warnings.  Does not change the exit status.
+    -e  Treat warnings as errors.  Does not change the exit status.
+
+Execute this script in the final phase of your build.  It will not
+work outside of Xcode, and should warn you if you try.  See the
+batch-upload script to upload symbols outside of Xcode.
+
+Here is an example Run Script Phase you can add to your project
+to invoke this script:
+
+    "\${PODS_ROOT}/FirebaseCrashReporting/upload-sym"
+
+To avoid stopping the build should the upload fail,
+
+    "\${PODS_ROOT}/FirebaseCrashReporting/upload-sym" -w ||
+        echo >&2 "\$0:0: warning: upload sym exited with status \$?"
+    exit 0 # claim success no matter what
+
+EOF
+}
+
+# MARK: Parse optional command-line flags
+
+VERBOSE=0 WARNINGS_ONLY=0 ERRORS_ONLY=0
+
+while getopts ehvw OPT; do
+    case "$OPT" in
+        h) help; exit 0;;
+        v) VERBOSE=$((VERBOSE + 1));;
+        w) WARNINGS_ONLY=1;;
+        e) ERRORS_ONLY=1;;
+        ?) usage; exit 2;;
+    esac
+done
+
+shift $((OPTIND - 1))
+
+if ((WARNINGS_ONLY && ERRORS_ONLY)); then
+    echo >&2 "Either -w or -e may be specified, but not both."
+    usage
+    exit 2
+fi
+
+# We take no arguments normally.
+
+if (($#)); then
+    echo >&2 "Unexpected argument '$1'"
+    usage
+    exit 2
+fi
+
+export PATH=/bin:/usr/bin       # play it safe
+
+# MARK: Load common utility routines
+
+. "$(dirname "$0")/upload-sym-util.bash"
+
+# MARK: Make the error output Xcode-friendly
+
+# This is a bit of Bash voodoo that cries for an explanation and is
+# horribly underdocumented on-line.  The construct '>(...)' starts a
+# subprocess with its stdin connected to a pipe.  After starting the
+# subprocess, the parser replaces the construct with the NAME of the
+# writable end of the pipe as a named file descriptor '/dev/fd/XX',
+# then reevaluates the line.  So, after the subprocess is started
+# (which filters stdin and outputs to stderr [not stdout]), the line
+# "exec 2> /dev/fd/XX" is evaluated.  This redirects the main
+# process's stderr to the given file descriptor.
+#
+# The end result is that anything sent to stderr of the form:
+#     file.in: line 47: blah blah
+# is replaced with
+#     file.in:47: error: blah blah
+# which Xcode will detect and emphasize in the formatted output.
+
+exec 2> >(sed -e 's/: line \([0-9]*\):/:\1: error:/' >&2)
+
+# Be long-winded about problems.  The user may not understand how this
+# script works or what prerequisites it has.  If the user sees this,
+# it is likely that they are executing the script outside of an Xcode
+# build.
+
+ERRMSG=$'Value missing\n\nThis script must be executed as part of an Xcode build stage to have the\nproper environment variables set.'
+
+# MARK: Locate Xcode-generated files
+
+: "${TARGET_BUILD_DIR:?"$ERRMSG"}"
+: "${FULL_PRODUCT_NAME:?"$ERRMSG"}"
+
+DSYM_BUNDLE="${DWARF_DSYM_FOLDER_PATH?"$ERRMSG"}/${DWARF_DSYM_FILE_NAME?"$ERRMSG"}"
+[[ -e "$DSYM_BUNDLE" ]] || unset DSYM_BUNDLE
+
+EXECUTABLE="${TARGET_BUILD_DIR?"$ERRMSG"}/${EXECUTABLE_PATH?"$ERRMSG"}"
+
+# MARK: Locate dump_syms utility
+
+if ! [[ -f "${FCR_DUMP_SYMS:=$(script_dir)/dump_syms}" && -x "$FCR_DUMP_SYMS" ]]; then
+    xcerror "Cannot find dump_syms."
+    xcnote "It should have been installed with the Cocoapod.  The location of dump_syms can be explicitly set using the environment variable FCR_DUMP_SYMS if you are using a non-standard install."
+
+    exit 2
+fi
+
+# MARK: Load GoogleService-Info.plist values (App ID & API key)
+
+# Sadly, PlistBuddy produces output even when an error occurs
+get_property () {
+    local PROPERTY="$1" PLIST="$2" VALUE
+    VALUE="$(/usr/libexec/PlistBuddy -c "print $PROPERTY" "$PLIST" 2>/dev/null)" && echo "$VALUE"
+}
+
+if [[ ! "$FIREBASE_API_KEY" || ! "FIREBASE_APP_ID" ]]; then
+    SERVICE_PLIST="$(find "${TARGET_BUILD_DIR}/${FULL_PRODUCT_NAME}" -name GoogleService-Info.plist | head -n1)"
+    : "${SERVICE_PLIST:?"GoogleService-Info.plist could not be located"}"
+    : "${FIREBASE_API_KEY:="$(get_property API_KEY "${SERVICE_PLIST}")"}"
+    : "${FIREBASE_APP_ID:="$(get_property GOOGLE_APP_ID "${SERVICE_PLIST}")"}"
+fi
+
+if ! [[ "$FIREBASE_API_KEY" ]]; then
+    xcerror "Unable to get API_KEY from GoogleService-Info.plist."
+    xcnote "Specify FIREBASE_API_KEY in environment."
+    exit 2
+fi
+
+if ! [[ "$FIREBASE_APP_ID" ]]; then
+    xcerror "Unable to get GOOGLE_APP_ID from GoogleService-Info.plist."
+    xcnote "Specify FIREBASE_APP_ID in environment."
+    exit 2
+fi
+
+# MARK: Load Info.plist values (Bundle ID & version)
+
+INFOPLIST="$TARGET_BUILD_DIR/$INFOPLIST_PATH"
+
+if [[ -f "$INFOPLIST" ]]; then
+    : "${FCR_PROD_VERS:="$(get_property CFBundleShortVersionString "$INFOPLIST")"}"
+    : "${FCR_BUNDLE_ID:="$(get_property CFBundleIdentifier "$INFOPLIST")"}"
+fi
+
+if ! [[ "$FCR_PROD_VERS" ]]; then
+    xcerror "Unable to get CFBundleShortVersionString from Info.plist."
+    xcnote "Specify FCR_PROD_VERS in environment."
+    exit 2
+fi
+
+if ! [[ "$FCR_BUNDLE_ID" ]]; then
+    xcerror "Unable to get CFBundleIdentifier from Info.plist."
+    xcnote "Specify FCR_BUNDLE_ID in environment."
+    exit 2
+fi
+
+# MARK: Dump collected information if requested
+
+if ((VERBOSE >= 2)); then
+    xcnote "FIREBASE_API_KEY = $FIREBASE_API_KEY"
+    xcnote "FIREBASE_APP_ID = $FIREBASE_APP_ID"
+    xcnote "DSYM_BUNDLE = ${DSYM_BUNDLE:-(unset, will use symbols in executable)}"
+    xcnote "EXECUTABLE = $EXECUTABLE"
+    xcnote "INFOPLIST = $INFOPLIST"
+    xcnote "FCR_PROD_VERS = $FCR_PROD_VERS"
+    xcnote "FCR_BUNDLE_ID = $FCR_BUNDLE_ID"
+fi
+
+# MARK: Create and upload symbol files for each architecture
+
+if [[ ! -x "${SWIFT_DEMANGLE:="$(xcrun --find swift-demangle 2>/dev/null)"}" ]]; then
+    SWIFT_DEMANGLE=/bin/cat
+fi
+
+for ARCH in ${ARCHS?:}; do
+    SYMBOL_FILE="SYMBOL_FILE_$ARCH"
+    fcr_mktemp "$SYMBOL_FILE" SCRATCH
+
+    if [[ ! -d "${DSYM_BUNDLE}" ]]; then
+        ((VERBOSE)) && xcnote "Extracting dSYM from executable."
+        fcr_mktempdir TMP_DSYM
+        DSYM_BUNDLE="${TMP_DSYM}/${EXECUTABLE##*/}.dSYM"
+        xcrun dsymutil -o "${DSYM_BUNDLE}" "${EXECUTABLE}"
+        STATUS=$?
+        if ((STATUS)); then
+            xcerror "Command dsymutil failed with exit code $STATUS."
+            exit $STATUS
+        fi
+    fi
+
+    "$FCR_DUMP_SYMS" -a "$ARCH" -g "$DSYM_BUNDLE" "$EXECUTABLE" >"$SCRATCH" 2> >(sed -e 's/^/warning: dump_syms: /' | grep -v 'failed to demangle' >&2)
+
+    STATUS=$?
+    if ((STATUS)); then
+        xcerror "Command dump_syms failed with exit code $STATUS."
+        exit $STATUS
+    fi
+
+    "${SWIFT_DEMANGLE}" <"${SCRATCH}" >|"${!SYMBOL_FILE}" || exit 1
+
+    if ((VERBOSE >= 2)); then
+        xcnote "${EXECUTABLE##*/} (architecture $ARCH) symbol dump follows (first 20 lines):"
+        head >&2 -n20 "${!SYMBOL_FILE}"
+    elif ((VERBOSE >= 1)); then
+        xcnote "${EXECUTABLE##*/} (architecture $ARCH) symbol dump follows (first line only):"
+        head >&2 -n1 "${!SYMBOL_FILE}"
+    fi
+
+    fcr_upload_files "${!SYMBOL_FILE}" || exit 1
+done

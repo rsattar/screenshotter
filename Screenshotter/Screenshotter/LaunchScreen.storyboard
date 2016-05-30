@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="14B17" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="RSv-ec-RRR">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
+    </dependencies>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="4iV-Aj-w9i">
+            <objects>
+                <viewController storyboardIdentifier="LaunchScreen" id="RSv-ec-RRR" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="QIO-pw-SAF"/>
+                        <viewControllerLayoutGuide type="bottom" id="m8t-Ll-vg5"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="1J3-zr-7UC">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" tag="20" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="intro_background" translatesAutoresizingMaskIntoConstraints="NO" id="bOf-hv-qpL">
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                            </imageView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="m1X-1B-pFS" userLabel="Centered View">
+                                <rect key="frame" x="0.0" y="154" width="600" height="292"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" tag="5" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="SCREENSHOTTER" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="T8o-C2-cOE">
+                                        <rect key="frame" x="175" y="0.0" width="251" height="36"/>
+                                        <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="30"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <imageView userInteractionEnabled="NO" tag="10" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon" translatesAutoresizingMaskIntoConstraints="NO" id="H3c-P0-lUM">
+                                        <rect key="frame" x="222" y="48" width="156" height="191"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                    </imageView>
+                                    <label opaque="NO" userInteractionEnabled="NO" tag="15" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="The simplest way to organize and manage mobile screenshots." textAlignment="center" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mEc-1o-woV">
+                                        <rect key="frame" x="170" y="253" width="260" height="39"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="260" id="5G4-zw-CMA"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="16"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="centerX" secondItem="mEc-1o-woV" secondAttribute="centerX" id="0es-nu-XVD"/>
+                                    <constraint firstAttribute="bottom" secondItem="mEc-1o-woV" secondAttribute="bottom" id="9qU-z1-6eM"/>
+                                    <constraint firstAttribute="centerX" secondItem="T8o-C2-cOE" secondAttribute="centerX" id="TqZ-0B-Qoi"/>
+                                    <constraint firstAttribute="centerX" secondItem="H3c-P0-lUM" secondAttribute="centerX" id="U0w-7q-Dbj"/>
+                                    <constraint firstItem="H3c-P0-lUM" firstAttribute="top" secondItem="T8o-C2-cOE" secondAttribute="bottom" constant="12" id="WoJ-aw-Imj"/>
+                                    <constraint firstItem="mEc-1o-woV" firstAttribute="top" secondItem="H3c-P0-lUM" secondAttribute="bottom" constant="14" id="dWd-8F-oex"/>
+                                    <constraint firstItem="T8o-C2-cOE" firstAttribute="top" secondItem="m1X-1B-pFS" secondAttribute="top" id="pGA-R4-B9V"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="bOf-hv-qpL" firstAttribute="top" secondItem="1J3-zr-7UC" secondAttribute="top" id="0Ox-qG-K0M"/>
+                            <constraint firstAttribute="centerX" secondItem="m1X-1B-pFS" secondAttribute="centerX" id="0h7-hg-rYW"/>
+                            <constraint firstAttribute="trailing" secondItem="bOf-hv-qpL" secondAttribute="trailing" id="H9M-YX-5bP"/>
+                            <constraint firstAttribute="trailing" secondItem="m1X-1B-pFS" secondAttribute="trailing" id="Ksk-cl-QCW"/>
+                            <constraint firstItem="m8t-Ll-vg5" firstAttribute="top" secondItem="bOf-hv-qpL" secondAttribute="bottom" id="Nxp-gW-MaQ"/>
+                            <constraint firstItem="m1X-1B-pFS" firstAttribute="leading" secondItem="1J3-zr-7UC" secondAttribute="leading" id="QfD-g4-g8a"/>
+                            <constraint firstItem="bOf-hv-qpL" firstAttribute="leading" secondItem="1J3-zr-7UC" secondAttribute="leading" id="fNI-v9-egb"/>
+                            <constraint firstAttribute="centerY" secondItem="m1X-1B-pFS" secondAttribute="centerY" id="mEW-vi-A4v"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="iN1-2G-WTN" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="721" y="501"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="icon" width="156" height="191"/>
+        <image name="intro_background" width="320" height="480"/>
+    </resources>
+</document>

@@ -1,0 +1,50 @@
+PODS:
+  - Firebase (3.2.0):
+    - Firebase/Core (= 3.2.0)
+  - Firebase/Analytics (3.2.0):
+    - FirebaseAnalytics (= 3.2.0)
+  - Firebase/Core (3.2.0):
+    - Firebase/Analytics (= 3.2.0)
+  - Firebase/Crash (3.2.0):
+    - Firebase/Analytics (= 3.2.0)
+    - FirebaseCrash (= 1.0.4)
+  - FirebaseAnalytics (3.2.0):
+    - FirebaseInstanceID (~> 1.0)
+    - GoogleInterchangeUtilities (~> 1.2)
+    - GoogleSymbolUtilities (~> 1.1)
+    - GoogleUtilities (~> 1.3)
+  - FirebaseCrash (1.0.4):
+    - FirebaseAnalytics (~> 3.2)
+    - FirebaseInstanceID (~> 1.0)
+    - GoogleInterchangeUtilities (~> 1.2)
+    - GoogleSymbolUtilities (~> 1.1)
+    - GoogleUtilities (~> 1.3)
+  - FirebaseInstanceID (1.0.6)
+  - GoogleInterchangeUtilities (1.2.1):
+    - GoogleSymbolUtilities (~> 1.0)
+  - GoogleSymbolUtilities (1.1.1)
+  - GoogleUtilities (1.3.1):
+    - GoogleSymbolUtilities (~> 1.0)
+  - MBProgressHUD (0.9.1)
+  - SDWebImage (3.7.3):
+    - SDWebImage/Core (= 3.7.3)
+  - SDWebImage/Core (3.7.3)
+
+DEPENDENCIES:
+  - Firebase
+  - Firebase/Crash
+  - MBProgressHUD (~> 0.9)
+  - SDWebImage (~> 3.7)
+
+SPEC CHECKSUMS:
+  Firebase: 6d4012da1598732a2b43f16d8355eca90f94ed59
+  FirebaseAnalytics: 6f75b04e6bfb8e0b6e9ef298e04c24eea3b13863
+  FirebaseCrash: e3bff070dca75f71e10e4295b18642f77f6d87c9
+  FirebaseInstanceID: d014d574053a2fe84478f12f7bae96979e7051bb
+  GoogleInterchangeUtilities: def8415a862effc67d549d5b5b0b9c7a2f97d4de
+  GoogleSymbolUtilities: 33117db1b5f290c6fbf259585e4885b4c84b98d7
+  GoogleUtilities: 56c5ac05b7aa5dc417a1bb85221a9516e04d7032
+  MBProgressHUD: c47f2c166c126cf2ce36498d80f33e754d4e93ad
+  SDWebImage: 1d2b1a1efda1ade1b00b6f8498865f8ddedc8a84
+
+COCOAPODS: 0.39.0

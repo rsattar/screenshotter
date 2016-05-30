@@ -1,0 +1,12 @@
+/* Class = "UIButton"; normalTitle = "Allow Access in Settings"; ObjectID = "jTI-aN-lx3"; */
+"jTI-aN-lx3.normalTitle" = "Allow Access in Settings";
+
+/* Class = "UILabel"; text = "Screenshotter doesn't work unless it can access your iPhone's photos."; ObjectID = "mEd-OM-M8D"; */
+"mEd-OM-M8D.text" = "Screenshotter doesn't work unless it can access your iPhone's photos.";
+
+/* Class = "UILabel"; text = "Warning"; ObjectID = "q5F-vn-W6z"; */
+"q5F-vn-W6z.text" = "Warning";
+
+/* Class = "UILabel"; text = "You denied permission to access your screenshots."; ObjectID = "rbv-7c-6xU"; */
+"rbv-7c-6xU.text" = "You denied permission to access your screenshots.";
+

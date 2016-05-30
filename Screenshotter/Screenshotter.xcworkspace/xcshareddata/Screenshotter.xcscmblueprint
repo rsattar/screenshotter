@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "297C13BBFAA7A2412EF363798C292BFC7710FAE8",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "297C13BBFAA7A2412EF363798C292BFC7710FAE8" : 0,
+    "64AD6E5F2868462165E621FC2F32F1C7A2869734" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "33EF81F0-3A74-4A4F-8B18-66B3F6C9AB9A",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "297C13BBFAA7A2412EF363798C292BFC7710FAE8" : "screenshotter-ios",
+    "64AD6E5F2868462165E621FC2F32F1C7A2869734" : "launchkit-ios"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "Screenshotter",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "Screenshotter\/Screenshotter.xcworkspace",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/clusterinc\/screenshotter-ios.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "297C13BBFAA7A2412EF363798C292BFC7710FAE8"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/clusterinc\/launchkit-ios.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "64AD6E5F2868462165E621FC2F32F1C7A2869734"
+    }
+  ]
+}

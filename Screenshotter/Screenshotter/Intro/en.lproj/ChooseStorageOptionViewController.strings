@@ -1,0 +1,18 @@
+/* Class = "UILabel"; text = "Backup files and folders"; ObjectID = "1AE-B6-Bc2"; */
+"1AE-B6-Bc2.text" = "Backup files and folders";
+
+/* Class = "UILabel"; text = "Sync between devices"; ObjectID = "Qgu-3x-UbC"; */
+"Qgu-3x-UbC.text" = "Sync between devices";
+
+/* Class = "UILabel"; text = "Access from desktop"; ObjectID = "glb-8T-hLj"; */
+"glb-8T-hLj.text" = "Access from desktop";
+
+/* Class = "UILabel"; text = "iCloud Drive keeps your screenshots organized and safe."; ObjectID = "mnu-MF-eji"; */
+"mnu-MF-eji.text" = "iCloud Drive keeps your screenshots organized and safe.";
+
+/* Class = "UIButton"; normalTitle = "Use iCloud Drive"; ObjectID = "xx2-Lf-sej"; */
+"xx2-Lf-sej.normalTitle" = "Use iCloud Drive";
+
+/* Class = "UILabel"; text = "Connect iCloud Drive?"; ObjectID = "z1z-QY-gmf"; */
+"z1z-QY-gmf.text" = "Connect iCloud Drive?";
+

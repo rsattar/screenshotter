@@ -1,0 +1,15 @@
+/* Class = "UILabel"; text = "Remove from camera roll"; ObjectID = "AI3-gV-DSo"; */
+"AI3-gV-DSo.text" = "Remove from camera roll";
+
+/* Class = "UILabel"; text = "Sync to desktop"; ObjectID = "GqP-iW-LzH"; */
+"GqP-iW-LzH.text" = "Sync to desktop";
+
+/* Class = "UIButton"; normalTitle = "Organize My Screenshots"; ObjectID = "QVc-hU-xpN"; */
+"QVc-hU-xpN.normalTitle" = "Organize My Screenshots";
+
+/* Class = "UILabel"; text = "Organize into folders"; ObjectID = "asi-sY-Mk5"; */
+"asi-sY-Mk5.text" = "Organize into folders";
+
+/* Class = "UILabel"; text = "SCREENSHOTTER"; ObjectID = "ekR-JO-HtC"; */
+"ekR-JO-HtC.text" = "SCREENSHOTTER";
+

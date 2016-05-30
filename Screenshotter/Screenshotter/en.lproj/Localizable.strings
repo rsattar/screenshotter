@@ -1,0 +1,34 @@
+/* Label describing that user has denied permissions to access their screenshots. */
+"notAuthorized.title.denied" = "You denied permissions to access your screenshots.";
+
+/* Label describing that user has restrictions preventing access to their screenshots. */
+"notAuthorized.title.restricted" = "You have restrictions preventing access to your screenshots.";
+
+/* Row for choosing all screenshots. Typically 'All' in English */
+"screenshotGroups.all" = "All";
+
+/* Row for choosing screenshots already filed and moved to folders. Typically 'Moved to Folders' in English */
+"screenshotGroups.alreadyFiled" = "Moved to Folders";
+
+/* Tile of screenshot groups screen, typically 'Folders' in English */
+"screenshotGroups.title" = "Folders";
+
+/* Row for choosing all unfiled screenshots. Typically 'Screenshots' in English */
+"screenshotGroups.unfiled" = "Screenshots";
+
+/* Single-line banner message below navigation bar, informing user of how many (N) screenshots were moved */
+"screenshotList.banner.nScreenshotsMoved" = "%lu screenshot(s) were moved";
+
+/* '1 Item Selected', in English. Single item. Title of navigation bar. */
+"screenshotList.title.1selected" = "1 Item Selected";
+
+/* 'N Item selected', in English. Plural. Title of navigation bar.
+   'N Item(s) selected', in English. Title of navigation bar. */
+"screenshotList.title.nSelected" = "%ld Item(s) Selected";
+
+/* 'Select Items' in English, prompting user to select items. Title of navigation bar. */
+"screenshotList.title.selectItems" = "Select Items";
+
+/* Progress message as title on navigation bar. 'Updating...' in English */
+"screenshotList.title.updating" = "Updating...";
+

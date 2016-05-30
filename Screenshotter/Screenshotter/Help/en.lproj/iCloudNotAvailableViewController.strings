@@ -1,0 +1,24 @@
+/* Class = "UILabel"; text = "2"; ObjectID = "6fM-GR-aoU"; */
+"6fM-GR-aoU.text" = "2";
+
+/* Class = "UILabel"; text = "1"; ObjectID = "E4T-Cf-3C6"; */
+"E4T-Cf-3C6.text" = "1";
+
+/* Class = "UILabel"; text = "Screenshotter cannot access your screenshots in iCloud."; ObjectID = "Jrw-aM-9hy"; */
+"Jrw-aM-9hy.text" = "Screenshotter cannot access your screenshots in iCloud.";
+
+/* Class = "UILabel"; text = "Turn on \"Documents & Data\" in Settings ➞ iCloud ➞ iCloud Drive ➞ Screenshotter "; ObjectID = "NfJ-9R-JFE"; */
+"NfJ-9R-JFE.text" = "Turn on \"Documents & Data\" in Settings ➞ iCloud ➞ iCloud Drive ➞ Screenshotter ";
+
+/* Class = "UILabel"; text = "Using Local Storage will stop using iCloud for screenshot storage and backup."; ObjectID = "RFq-4l-w7l"; */
+"RFq-4l-w7l.text" = "Using Local Storage will stop using iCloud for screenshot storage and backup.";
+
+/* Class = "UIButton"; normalTitle = "Use Local Storage"; ObjectID = "hlV-FI-wZ0"; */
+"hlV-FI-wZ0.normalTitle" = "Use Local Storage";
+
+/* Class = "UILabel"; text = "Ensure you are signed into iCloud."; ObjectID = "nAn-HL-0se"; */
+"nAn-HL-0se.text" = "Ensure you are signed into iCloud.";
+
+/* Class = "UILabel"; text = "iCloud Not Available"; ObjectID = "zrU-AV-2HG"; */
+"zrU-AV-2HG.text" = "iCloud Not Available";
+
