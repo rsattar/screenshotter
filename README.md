@@ -20,7 +20,7 @@ Screenshotter relies on iCloud drive integration, so you will need to have that 
 ### (Optional) Firebase Integration
 Screenshotter uses Firebase Analytics and Crash Reporting. The project has the necessary files either empty (`GoogleService-Info.plist`) or missing (a `.json` file for crash reporting) in the `Firebase Configuration/` folder. 
 
-See [instructions](https://github.com/LaunchKit/screenshotter-ios/blob/master/Screenshotter/Screenshotter/Analytics/Firebase%20Configuration/Instructions.md) to integrating with your Firebase account.
+See [instructions](https://github.com/LaunchKit/screenshotter/blob/master/Screenshotter/Screenshotter/Analytics/Firebase%20Configuration/Instructions.md) to integrating with your Firebase account.
 
 ### CocoaPods
 Screenshotter uses:
@@ -33,4 +33,4 @@ Screenshotter uses:
 ## License
 Screenshotter uses an Apache 2.0 license, under a Cluster Labs, Inc. copyright.
 
-[Read License File](https://github.com/LaunchKit/screenshotter-ios/blob/master/LICENSE)
+[Read License File](https://github.com/LaunchKit/screenshotter/blob/master/LICENSE)
